@@ -1,0 +1,8 @@
+#!/bin/sh
+
+clear
+cd~
+arch
+basename /Desktop/Assignments
+cd Desktop/Assignments
+cat xyz
