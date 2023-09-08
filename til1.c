@@ -14,11 +14,8 @@ void* show_message(void* arg) {
 }
 
 int main(int argc, char **argv) {
-    long long limit = atoll(argv[1]); 
-
     long long limit1 = 1;
     long long limit2 = 2;
-
     
     // Thread IDs
     pthread_t tid1;
