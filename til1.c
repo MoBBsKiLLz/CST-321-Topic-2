@@ -10,7 +10,7 @@ void* show_message(void* arg) {
     pthread_t tid = pthread_getthreadid_np();
 
     for (int i = 0; i <= 10; ++i) {
-        printf("This is message %d\n for thread %i\n", i, &tid);
+        printf("This is message %d\n for thread %i\n", i, (int)&tid);
         sleep(limit);
     }
 }
