@@ -18,17 +18,17 @@ void main() {
 
     if (pid == 0) {
         while (1);
-        exit(EXIT_SUCCESS);
+        exit(1);
     }
     while (1) {
         for (int i = 1; i <= 30; i++) {
             printf("Message %d from parent.\n", i);
             if (i == 5) {
-                kill((int)childpid, SIGUSR1);
+                kill(pid, SIGUSR1);
             }
             sleep(1);
         }
-    }
 
-    return EXIT_SUCCESS;
+        exit(1);
+    }
 }
