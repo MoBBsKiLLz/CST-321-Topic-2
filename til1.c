@@ -8,7 +8,7 @@ void* show_message(void* arg) {
     long long limit = *limit_ptr;
 
     for (int i = 0; i <= 10; ++i) {
-        printf("This is message %d\n", i);
+        printf("This is message %d\n for thread %d\n", i, pthread_getthreadid_np());
         sleep(limit);
     }
 }
