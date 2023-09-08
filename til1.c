@@ -14,7 +14,11 @@ void* show_message(void* arg) {
 }
 
 int main(int argc, char **argv) {
-    long long limit1 = atoll(argv[1]); 
+    long long limit = atoll(argv[1]); 
+
+    long long limit1 = 1;
+    long long limit2 = 2;
+
     
     // Thread IDs
     pthread_t tid1;
@@ -25,8 +29,8 @@ int main(int argc, char **argv) {
     pthread_attr_init(&attr);
 
     // Create Threads
-    pthread_create(&tid1, &attr, show_message, 1);
-    pthread_create(&tid2, &attr, show_message, 2);
+    pthread_create(&tid1, &attr, show_message, &limit1);
+    pthread_create(&tid2, &attr, show_message, &limit2);
 
     // Wait for threads to finish
     pthread_join(tid1, NULL);
