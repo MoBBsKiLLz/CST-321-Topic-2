@@ -3,8 +3,8 @@
 #include <pthread.h>
 
 void* show_message(void* arg) {
-    int *limit_ptr = (int*) arg;
-    int limit = *limit_ptr;
+    long long *limit_ptr = (long long*) arg;
+    long long limit = *limit_ptr;
 
     for (int i = 0; i <= 10; ++i) {
         printf("This is message %d\n", i);
