@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/types.h>
 
 void* show_message(void* arg) {
     long long *limit_ptr = (long long*) arg;
