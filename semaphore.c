@@ -4,18 +4,18 @@
 // Author: Miguel Zepeda
 
 // Global variable
-int capacity = 2;
+int capacity = 1;
 
 void* withdraw(void* arg) {
     // Derefence person from arg
     int person = *(int *) arg;
     // Begining of critical section
     capacity -= person; // Person takes key
+    // Return the capacity
+    capacity += person;
     // End of critical section
     // Exit thread with 0
     pthread_exit(NULL);
-    // Return the key
-    capacity += person;
 }
 
 int main(void) {
@@ -31,6 +31,10 @@ int main(void) {
 
     pthread_t tid3;
     pthread_create(&tid3, NULL, withdraw, &person);
+
+    for(int i = 0; i < 1000000; i++) {
+        
+    }
 
     // Wait for threads to finish
     pthread_join(tid1, NULL);
