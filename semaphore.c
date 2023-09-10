@@ -1,49 +1,62 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 // Author: Miguel Zepeda
+#define THREAD_NUM 2
 
-// Global variable
-int capacity = 1;
+int buffer[10];
+int count = 0;
 
-void* withdraw(void* arg) {
-    // Derefence person from arg
-    int person = *(int *) arg;
-    // Begining of critical section
-    capacity -= person; // Person takes key
-    // Return the capacity
-    capacity += person;
-    // End of critical section
-    // Exit thread with 0
-    pthread_exit(NULL);
+pthread_mutex_t mutexBuffer;
+
+void* producer(void* args) {
+    while(1) {
+        // Produce random number
+        int x = rand() % 100;
+
+        pthread_mutex_lock(&mutexBuffer);
+        // Add to buffer
+        buffer[count] = x;
+        count = count + 1;
+        pthread_mutex_unlock(&mutexBuffer);
+    }
 }
 
-int main(void) {
-    // Person variable
-    int person = 1;
+void* consumer(void* args) {
+    while(1) {
+        // Remove from buffer
+        pthread_mutex_lock(&mutexBuffer);
+        int y = buffer[count - 1];
+        count = count - 1;
+        pthread_mutex_unlock(&mutexBuffer);
 
-    // Spawn threads
-    pthread_t tid1;
-    pthread_create(&tid1, NULL, withdraw, &person);
+        // Consume
+        printf("Got %d\n", y);
+    }
+}
 
-    pthread_t tid2;
-    pthread_create(&tid2, NULL, withdraw, &person);
-
-    pthread_t tid3;
-    pthread_create(&tid3, NULL, withdraw, &person);
-
-    for(int i = 0; i < 1000000; i++) {
-        
+int main(int argc, char* argv[]) {
+    srand(time(NULL));
+    // Create producer and consumer threads
+    pthread_t th[THREAD_NUM];
+    pthread_mutex_init(&mutexBuffer, NULL);
+    int i;
+    for(i = 0; i < THREAD_NUM; i++) {
+        if(phtread_create(&th[i], NULL, &producer, NULL) != 0) {
+            perror("Failed to create thread");
+        } else {
+            if(phtread_create(&th[i], NULL, &consumer, NULL) != 0) {
+            perror("Failed to create thread");
+        }
     }
 
     // Wait for threads to finish
-    pthread_join(tid1, NULL);
-    pthread_join(tid2, NULL);
-    pthread_join(tid3, NULL);
-
-    // Show the remaining balance
-    printf("Capacity = %d\n", capacity);
-
-    // Exit program
+    for (i = 0; i < THREAD_NUM; i++){
+        if (pthread_join(th[i], NULL) != 0) {
+            perror("Failed to join thread");
+        }
+    }
+    pthread_mutex_destroy(&mutexBuffer);
     return 0;
 }
