@@ -11,14 +11,14 @@
 #define N 100
 
 // Words to read
-char word[10][20] = { "tiger", "lion", "elephant", "zebra", "horse", "camel", "deer", "crocodile", "rabbit", "monkey" };
+char *word[] = { "tiger", "lion", "elephant", "zebra", "horse", "camel", "deer", "crocodile", "rabbit", "monkey" };
 
 // Shared Circular Buffer
 struct CIRCULAR_BUFFER {
     int count;              // Number of items in the buffer
     int lower;              // Next slot to read in the buffer
     int upper;              // Next slot to write in the buffer
-    char buffer[N][20];
+    char *buffer[];
 };
 struct CIRCULAR_BUFFER *buffer = NULL;
 
@@ -27,7 +27,7 @@ int put(char word[]) {
         // Buffer is full, avoid overflow
         return 0;
     }
-    buffer->buffer[buffer->upper][20] = word;
+    buffer->buffer[buffer->upper] = word;
     buffer->upper = (buffer->upper + 1) % N;
     return 1;
 }
@@ -35,6 +35,7 @@ int put(char word[]) {
 int get(char* word[]){
     if(buffer->lower == buffer->upper){
         //buffer is empty
+        printf("It's empty.");
         return 0;
     }
 
@@ -70,6 +71,7 @@ void wakeupConsumer(int signum){
     int i = 0;
     while(i < 10) {
         consumer(word[i]);
+        i++;
     }
 }
 
@@ -77,6 +79,7 @@ void wakeupProducer(int signum) {
     int i = 0;
     while(i < 10) {
         producer(word[i]);
+        i++;
     }
 }
 
@@ -89,12 +92,10 @@ int main(int argc, char* argv[]) {
     buffer->lower = 0;
     buffer->upper = 0;
     
-    // Create threads
-    __pid_t pid;
-    __pid_t otherPid;
-    
     // Use fork()
-    pid = fork();
+    pid_t pid = fork();
+    pid_t otherPid;
+    
     if (pid == -1) {
         // Error: If fork() returns -1 then an error happened (for example, number of processes reached the limit).
         printf("Can't fork, error %d\n", errno);
@@ -104,13 +105,14 @@ int main(int argc, char* argv[]) {
     // OK: If fork() returns non zero then the parent process is running else child process is running
     if (pid == 0) {
         // Run Producer Process logic as a Child Process
+        printf("Running producer.\n");
         otherPid = getppid();
-        kill(pid, SIGUSR1);
+        kill(otherPid, SIGUSR1);
     } else {
         // Run Consumer Process logic as a Parent Process
+        printf("Running consumer.\n");
         otherPid = pid;
-        kill(pid, SIGUSR2);
+        kill(otherPid, SIGUSR2);
     }
-
     return 0;
 }
