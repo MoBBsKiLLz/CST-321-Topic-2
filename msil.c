@@ -5,7 +5,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-#define MAX_COUNT 200
 #define N 10
 
 char buffer[N];
@@ -40,7 +39,8 @@ int ChildProcess(char* letter) {
 }
 
 void charavail(int signum) {
-    for(int i = 0; i < count; i++) {
+    int size = count;
+    for(int i = 0; i < size; i++) {
         ChildProcess(&buffer[i]);
         sleep(1);
     }
@@ -56,27 +56,25 @@ void main() {
     pid_t pid = fork();
 
     if (pid == 0) {
-        for (;;);
+        wait(NULL);
     } 
     
-    while(1){
-        char word[] = "Miguel";
-        int length = sizeof(word) / sizeof(word[0]);
-        for (int i = 0; i < length; i++) {
-            ParentProcess(word[i]);
+    char word[] = "Miguel";
+    int length = sizeof(word) / sizeof(word[0]);
+    for (int i = 0; i < length; i++) {
+        ParentProcess(word[i]);
 
-            if (i == 1) {
-                kill(pid, SIGUSR1);
-                printf("Character available.\n");
-            } else if (i == length - 1) {
-                ParentProcess('\0');
-                kill(pid, SIGUSR2);
-                printf("End of string.\n");
-            }
-
-            sleep(1);
+        if (i == 1) {
+            kill(pid, SIGUSR1);
+            printf("Character available.\n");
+        } else if (i == length - 1) {
+            ParentProcess('\0');
+            kill(pid, SIGUSR2);
+            printf("End of string.\n");
         }
 
-        exit(1);
-    }      
+        sleep(1);
+    }
+
+    exit(1);     
 }
