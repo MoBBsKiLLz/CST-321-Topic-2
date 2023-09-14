@@ -5,9 +5,6 @@
 #define MAX_COUNT 200
 #define N 10
 
-void ChildProcess(void); // Child process prototype
-void ParentProcess(void); // Parent process prototype
-
 char buffer[N];
 int writeIndx = 0;
 int readIndx = 0;
@@ -30,7 +27,33 @@ int get(int* item) {
     *item = buffer[readIndx];
     readIndx = (readIndx + 1) % N;
     count--;
+    printf("Got the letter %s\n", &item);
     return 1;
+}
+
+void ChildProcess(void) {
+    int i;
+
+    for (i = 1; i <= MAX_COUNT; i++) {
+        printf("  This line is from child, value = %d\n", i);
+    }
+    printf("  *** Child process is done ***\n");
+}
+
+void ParentProcess(void) {
+    int i;
+
+    for (i = 1; i <= MAX_COUNT; i++) {
+        printf("This line is from parent, value = %d\n", i);
+    }
+    printf("*** Parent is done ***\n");
+
+    char word[] = "Miguel";
+
+    int i = 0;
+    while(put(word[i])) {
+        i++;
+    }
 }
 
 void main(void) {
@@ -42,9 +65,7 @@ void main(void) {
     } else {
         ParentProcess();
     }
-}
-
-void ChildProcess(void) {
+}void ChildProcess(void) {
     int i;
 
     for (i = 1; i <= MAX_COUNT; i++) {
